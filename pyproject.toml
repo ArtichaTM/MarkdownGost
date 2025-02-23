@@ -13,7 +13,8 @@ version="1.0.1"
 authors = [
   {name="Геворкян Артём", email="tima-1324@mail.ru"}
 ]
-description = "Конвертер MD файлов в GOST стандарт"
+license = {text = "GNUv3"}
+description = "Конвертер MD файлов в ГОСТ стандарт"
 dependencies = [
   'python-docx >= 1.1.2',
   'pillow >= 10.4.0',
@@ -23,7 +24,7 @@ dependencies = [
   'latex2mathml',
   'setuptools'  # For pkg_resources
 ]
-
+readme = "readme.md"
 classifiers = [
   "Development Status :: 1 - Planning"
   , "Development Status :: 4 - Beta"
@@ -36,6 +37,9 @@ classifiers = [
   , "Natural Language :: Russian"
 ]
 requires-python = ">= 3.12"
+
+[project.urls]
+homepage = "https://github.com/ArtichaTM/MarkdownGost"
 
 [project.scripts]
 mgost = "mgost.cli:main"
