@@ -37,6 +37,9 @@ classifiers = [
 ]
 requires-python = ">= 3.12"
 
+[project.scripts]
+mgost = "mgost.cli:main"
+
 [project.optional-dependencies]
 tests = [
   'flake8' # py3.9 7.0.0
