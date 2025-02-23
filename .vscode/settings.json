@@ -1,0 +1,28 @@
+{
+    "cSpell.words": [
+        "autofit",
+        "beautifulsoup",
+        "Gost",
+        "iterchildren",
+        "lctx",
+        "macroses",
+        "marko",
+        "mgost",
+        "omml",
+        "ommls",
+        "Oxml",
+        "sympify",
+        "sympy",
+        "xmlchemy"
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/__pycache__": true
+    },
+    "python.analysis.typeCheckingMode": "standard"
+}
