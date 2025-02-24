@@ -6,10 +6,16 @@ from logging import warning
 from docx import Document
 
 from .context import Context
-from .settings import get_settings
+from .settings import Settings
 from . import exceptions
 from .md_converter import parse as parse_md
 from .types.simple import Root
+
+
+__all__ = (
+    'convert',
+    'Settings',
+)
 
 
 def _build_args_parser() -> ArgumentParser:
@@ -63,35 +69,45 @@ def _parse_args() -> tuple[Path, Path]:
 
 
 def convert(source: Path, dest: Path | BytesIO) -> None:
-    context = Context(source, dest)
-    settings = get_settings()
-    context.d = Document(str(settings.paths.base_docx))
-    # for style in context.d.styles:
-    #     print(style.name)
-    assert isinstance(source, Path)
-    context.current_file_path = source
-    root = parse_md(source, context)
-    root.file_path = source
-    context.root = root
-
-    available_post_processors = settings.post_processors
-    for post_processor in available_post_processors.values():
-        post_processor(context)
-
-    root = context.root
-    assert isinstance(root, Root)
-    assert isinstance(root.file_path, Path)
-    context.current_file_path = root.file_path
-    root.add_to_document(context.d, context)
-    # from pprint import pp
-    # pp(context.sources.as_dict())
-    # pp(root.as_dict())
-
-    for macros in context.post_docx_macroses:
-        macros.process_after_docx_creation(context)
-
-    assert isinstance(context.output, (Path, BytesIO))
-    if isinstance(context.output, Path):
-        context.d.save(str(context.output))
+    if Settings.initialized():
+        self_init_settings = False
+        settings = Settings.get()
     else:
-        context.d.save(context.output)
+        self_init_settings = True
+        settings = Settings(None)
+
+    try:
+        context = Context(source, dest)
+        context.d = Document(str(settings.paths.base_docx))
+        # for style in context.d.styles:
+        #     print(style.name)
+        assert isinstance(source, Path)
+        context.current_file_path = source
+        root = parse_md(source, context)
+        root.file_path = source
+        context.root = root
+
+        available_post_processors = settings.post_processors
+        for post_processor in available_post_processors.values():
+            post_processor(context)
+
+        root = context.root
+        assert isinstance(root, Root)
+        assert isinstance(root.file_path, Path)
+        context.current_file_path = root.file_path
+        root.add_to_document(context.d, context)
+        # from pprint import pp
+        # pp(context.sources.as_dict())
+        # pp(root.as_dict())
+
+        for macros in context.post_docx_macroses:
+            macros.process_after_docx_creation(context)
+
+        assert isinstance(context.output, (Path, BytesIO))
+        if isinstance(context.output, Path):
+            context.d.save(str(context.output))
+        else:
+            context.d.save(context.output)
+    finally:
+        if self_init_settings:
+            settings.close()

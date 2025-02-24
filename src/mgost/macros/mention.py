@@ -2,6 +2,7 @@ from ._mixins import DuringDocxCreation, AfterDocxCreation
 
 
 class Macros(DuringDocxCreation, AfterDocxCreation):
+    """Places counter and media name in place of macros"""
     __slots__ = ()
 
     def process_during_docx_creation(self, p, context):

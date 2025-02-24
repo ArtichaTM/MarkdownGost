@@ -2,6 +2,7 @@ from ._mixins import DuringDocxCreation, AfterDocxCreation
 
 
 class Macros(DuringDocxCreation, AfterDocxCreation):
+    """Returns amount of all tables in document"""
     __slots__ = ()
 
     def process_during_docx_creation(self, p, context):

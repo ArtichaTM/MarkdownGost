@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from random import random
 from logging import warning
 
-from mgost.settings import get_settings
+from mgost.settings import Settings
 from ._base import SourceConverter
 
 
@@ -37,7 +37,7 @@ class Converter(SourceConverter):
     def parse(self, p, parsed_result, context):
         url = parsed_result.geturl()
         try:
-            page = get_settings().internet_connection(
+            page = Settings.get().internet_connection(
                 url,
                 url_expire=60*60*24*7.0
             )

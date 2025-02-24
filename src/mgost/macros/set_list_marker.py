@@ -3,16 +3,17 @@ from ._mixins import DuringDocxCreation
 
 
 class Macros(DuringDocxCreation):
+    """Changes marker list format"""
     __slots__ = ()
 
     def process_during_docx_creation(self, p, context):
         args = self.macros.args
         if len(args) != 3:
             raise RuntimeError(
-                f"Error during evaluation {self.name} macros. "
+                f"Error during evaluation {self.get_name()} macros. "
                 "This macros requires this arguments: ("
                 "new_digit, new_endline, new_endline_end). "
-                f"Example: `{self.name}(•,;,.)`"
+                f"Example: `{self.get_name()}(•,;,.)`"
             )
         context.list_marker_info = ListMarkerInfo(*args)
         return []

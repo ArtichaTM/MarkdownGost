@@ -2,6 +2,7 @@ from ._mixins import Instant
 
 
 class Macros(Instant):
+    """Saves variable in context and instantly places it"""
     __slots__ = ()
 
     def process_instant(self, context):

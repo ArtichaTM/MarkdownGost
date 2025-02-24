@@ -2,6 +2,7 @@ from ._mixins import Instant
 
 
 class Macros(Instant):
+    """Places variable from context (error if not exists)"""
     __slots__ = ()
 
     def process_instant(self, context):

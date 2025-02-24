@@ -1,7 +1,7 @@
 from typing import Sequence
 from dataclasses import replace
 
-from mgost.settings import get_settings
+from mgost.settings import Settings
 from mgost.context import Context
 from mgost.types.run import Run
 from mgost.types.mixins import AddableToParagraph, AddableToDocument
@@ -54,7 +54,7 @@ class Macros(Run):
         self.command = command
         self.value = value
         self.args = args
-        cl = get_settings().macroses.get(self.command, None)
+        cl = Settings.get().macroses.get(self.command, None)
         if cl is None:
             self.cl = None
         else:

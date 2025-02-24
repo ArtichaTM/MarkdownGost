@@ -2,6 +2,7 @@ from multiprocessing import Process, Queue
 from pathlib import Path
 from io import StringIO
 
+from mgost.settings import Settings
 from ._mixins import DuringDocxCreation, AfterDocxCreation
 
 
@@ -14,6 +15,7 @@ def exec_code(file_path: Path, q: Queue):
 
 
 class Macros(DuringDocxCreation, AfterDocxCreation):
+    """Prints simple python code from stdout into document"""
     __slots__ = ('process', 'q', 'run')
     process: Process
     q: Queue
@@ -41,7 +43,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
         self, context
     ) -> None:
         try:
-            self.process.join(timeout=1)
+            self.process.join(timeout=Settings.get().code_run_timeout)
         except TimeoutError:
             print(f"Timeout for code in {self.macros.value}")
             return

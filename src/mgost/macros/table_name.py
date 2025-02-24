@@ -2,6 +2,7 @@ from ._mixins import DuringDocxCreation
 
 
 class Macros(DuringDocxCreation):
+    """Names previous table"""
     __slots__ = ()
 
     def process_during_docx_creation(self, p, context):

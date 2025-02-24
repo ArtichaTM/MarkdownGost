@@ -6,7 +6,7 @@ import pickle
 
 import requests
 
-from mgost.settings import get_settings
+from mgost.settings import Settings
 
 
 class RequestResultInfo:
@@ -75,7 +75,7 @@ class RequestResultInfo:
             self.url,
             timeout=1.,
             headers={
-                'User-Agent': get_settings().user_agent
+                'User-Agent': Settings.get().user_agent
             }
         )
 
@@ -101,18 +101,22 @@ class RequestResultInfo:
 class InternetConnection:
     __slots__ = ('path_file', '_cache', 'agent')
     _FILE_NAME: str = 'internet_cache.pkl'
-    cache_folder_path: Path
+    cache_folder_path: Path | None
     _cache: dict[str, RequestResultInfo]
     agent: str
 
     def __init__(
         self,
-        cache_folder: Path
+        cache_folder: Path | None
     ) -> None:
-        assert isinstance(cache_folder, Path)
+        assert cache_folder is None or isinstance(cache_folder, Path)
+        self._cache = dict()
+
+        if cache_folder is None:
+            self.path_file = None
+            return
         assert cache_folder.is_dir()
         self.path_file = cache_folder / self._FILE_NAME
-        self._cache = dict()
 
         if not self.path_file.exists():
             return
@@ -148,6 +152,8 @@ class InternetConnection:
         raise NotImplementedError()
 
     def close(self) -> None:
+        if self.path_file is None:
+            return
         assert not self.path_file.is_dir()
         with open(self.path_file, mode='wb') as file:
             pickle.dump(self._cache, file)

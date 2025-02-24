@@ -5,6 +5,7 @@ from ._mixins import DuringDocxCreation
 
 
 class Macros(DuringDocxCreation):
+    """Changes background color of run. Use WD_COLOR_INDEX names"""
     __slots__ = ()
 
     def __init__(self, macros) -> None:

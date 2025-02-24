@@ -2,6 +2,7 @@ from ._mixins import Instant
 
 
 class Macros(Instant):
+    """During docx render prints macros content to stdout"""
     __slots__ = ()
 
     def process_instant(self, context):

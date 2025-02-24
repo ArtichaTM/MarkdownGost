@@ -1,11 +1,11 @@
 from pathlib import Path
-from .settings import init_settings
+from .settings import Settings
 
 from . import _parse_args, convert
 
 
 def main():
-    with init_settings(Path() / 'mgost'):
+    with Settings(Path() / 'mgost'):
         source, dest = _parse_args()
         convert(source, dest)
 

@@ -3,6 +3,7 @@ from mgost.types.complex.formula_describe import FormulaDescribe
 
 
 class Macros(Instant):
+    """Simplified version of formula variables describe"""
     __slots__ = ()
 
     def process_instant(self, context):

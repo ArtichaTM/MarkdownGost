@@ -10,7 +10,9 @@ if TYPE_CHECKING:
     from mgost.context import Context
 
 
-__all__ = ('get_settings', 'init_settings')
+__all__ = (
+    'Settings',
+)
 
 
 class Paths:
@@ -29,7 +31,7 @@ class Paths:
         self.mml2omml = self.module_root / 'MML2OMML.xsl'
 
 
-class _Settings:
+class Settings:
     __slots__ = (
         # Code classes, functions, e.t.c.
         # that imported dynamically
@@ -38,8 +40,10 @@ class _Settings:
 
         'internet_connection', 'user_agent',
         'paths', 'mml2omml_xslt',
+
+        'code_run_timeout',
     )
-    _instance: '_Settings | None' = None
+    _instance: 'Settings | None' = None
 
     macroses: dict[str, type['macros_mixins.MacrosBase']]
     source_converters: dict[str, 'SourceConverter']
@@ -48,16 +52,22 @@ class _Settings:
     internet_connection: 'InternetConnection'
     user_agent: str
     paths: Paths
+    code_run_timeout: int
 
     def __init__(
         self,
-        temp_folder: Path
+        temp_folder: Path | None
     ) -> None:
-        assert isinstance(temp_folder, Path)
-        temp_folder.mkdir(exist_ok=True)
-
-        assert type(self)._instance is None
+        assert type(self)._instance is None, \
+            'There are 2 settings instances'
         type(self)._instance = self
+
+        assert any((
+            temp_folder is None,
+            isinstance(temp_folder, Path)
+        ))
+        if isinstance(temp_folder, Path):
+            temp_folder.mkdir(exist_ok=True)
 
         from mgost.macros import iter_macroses
         from mgost.source_converters import build_converters
@@ -77,13 +87,14 @@ class _Settings:
             'altpriv cvcv=2 smf=0'
         )
         self.paths = Paths(Path(__file__).parent)
+        self.code_run_timeout = 1
 
         tree = etree.parse(
             self.paths.mml2omml
         )  # type: ignore
         self.mml2omml_xslt = etree.XSLT(tree)
 
-    def __enter__(self) -> '_Settings':
+    def __enter__(self) -> 'Settings':
         return self
 
     def __exit__(self, *args) -> None:
@@ -94,16 +105,12 @@ class _Settings:
         type(self)._instance = None
         self.internet_connection.close()
 
+    @classmethod
+    def initialized(cls) -> bool:
+        return cls._instance is not None
 
-def get_settings() -> _Settings:
-    s = _Settings._instance
-    assert s is not None
-    return s
-
-
-def init_settings(temp_folder: Path) -> _Settings:
-    assert isinstance(temp_folder, Path)
-    assert _Settings._instance is None
-    return _Settings(
-        temp_folder=temp_folder
-    )
+    @classmethod
+    def get(cls) -> 'Settings':
+        s = cls._instance
+        assert s is not None
+        return s

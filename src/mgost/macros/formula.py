@@ -5,6 +5,7 @@ from mgost.types.simple import Run
 
 
 class Macros(Instant):
+    """Places formula in-place of macros"""
     __slots__ = ()
 
     def process_instant(self, context):

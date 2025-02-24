@@ -4,7 +4,7 @@ from lxml import etree
 from docx.text.paragraph import Paragraph as _Paragraph
 from docx.text.run import Run as _Run
 
-from mgost.settings import get_settings
+from mgost.settings import Settings
 from mgost.context import Context
 from .low_functions import add_hyperlink, add_linked_run
 
@@ -60,7 +60,7 @@ def add_run(text: str | None, p: _Paragraph, context: Context) -> _Run | None:
 
 def add_formula(p: _Paragraph, text: str) -> None:
     from latex2mathml.converter import convert as latex2mathml
-    settings = get_settings()
+    settings = Settings.get()
 
     math_mls = [latex2mathml(i) for i in text.split('=')]
 

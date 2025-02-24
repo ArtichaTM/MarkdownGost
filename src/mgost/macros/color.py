@@ -4,6 +4,9 @@ from ._mixins import DuringDocxCreation
 
 
 class Macros(DuringDocxCreation):
+    """
+    Changes run color
+    """
     __slots__ = ()
 
     def process_during_docx_creation(self, p, context):
