@@ -10,6 +10,7 @@ from .settings import Settings
 from . import exceptions
 from .md_converter import parse as parse_md
 from .types.simple import Root
+from mgost.post_processors import get_post_processors
 
 
 __all__ = (
@@ -87,8 +88,7 @@ def convert(source: Path, dest: Path | BytesIO) -> None:
         root.file_path = source
         context.root = root
 
-        available_post_processors = settings.post_processors
-        for post_processor in available_post_processors.values():
+        for post_processor in get_post_processors().values():
             post_processor(context)
 
         root = context.root

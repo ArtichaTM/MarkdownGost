@@ -35,8 +35,6 @@ class Settings:
     __slots__ = (
         # Code classes, functions, e.t.c.
         # that imported dynamically
-        'macroses', 'source_converters',
-        'post_processors',
 
         'internet_connection', 'user_agent',
         'paths', 'mml2omml_xslt',
@@ -44,10 +42,6 @@ class Settings:
         'code_run_timeout',
     )
     _instance: 'Settings | None' = None
-
-    macroses: dict[str, type['macros_mixins.MacrosBase']]
-    source_converters: dict[str, 'SourceConverter']
-    post_processors: dict[str, Callable[['Context'], None]]
 
     internet_connection: 'InternetConnection'
     user_agent: str
@@ -69,15 +63,9 @@ class Settings:
         if isinstance(temp_folder, Path):
             temp_folder.mkdir(exist_ok=True)
 
-        from mgost.macros import iter_macroses
-        from mgost.source_converters import build_converters
         from mgost.internet_connector import InternetConnection
-        from mgost.post_processors import build_callables
 
         self.internet_connection = InternetConnection(temp_folder)
-        self.macroses = {name: cl for name, cl in iter_macroses()}
-        self.source_converters = build_converters()
-        self.post_processors = build_callables()
         self.user_agent = (
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
             'AppleWebKit/537.36 (KHTML, like Gecko) '

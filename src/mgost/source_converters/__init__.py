@@ -4,7 +4,13 @@ from pathlib import Path
 from ._base import SourceConverter
 
 
-def build_converters() -> dict[str, SourceConverter]:
+__converters: dict[str, SourceConverter] | None = None
+
+
+def get_converters() -> dict[str, SourceConverter]:
+    global __converters
+    if __converters is not None:
+        return __converters
     output: dict[str, SourceConverter] = dict()
     for file in Path(__file__).parent.iterdir():
         if not file.name.endswith('.py'):
@@ -27,4 +33,5 @@ def build_converters() -> dict[str, SourceConverter]:
         converter = values['Converter']()
         assert isinstance(converter, SourceConverter)
         output[converter.get_parsing_domain()] = converter
+    __converters = output
     return output

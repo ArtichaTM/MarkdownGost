@@ -1,7 +1,8 @@
 from urllib.parse import urlparse, ParseResult
 
-from mgost.settings import Settings
 from ..mixins import AddableToDocument, MappingElement
+from mgost.source_converters import get_converters
+
 
 __all__ = ('Sources', 'SourceLine')
 
@@ -29,11 +30,11 @@ class SourceLine(AddableToDocument):
         }
 
     def add_to_document(self, d, context) -> None:
-        settings = Settings.get()
-        converter = settings.source_converters.get(self.url.netloc, None)
+        converters = get_converters()
+        converter = converters.get(self.url.netloc, None)
         if converter is None:
-            assert '' in settings.source_converters, settings.source_converters
-            converter = settings.source_converters['']
+            assert '' in converters, converters
+            converter = converters['']
         p = d.add_paragraph(style='List Number')
         p.add_run(f"{self.id}.\t")
         converter.parse(p, self.url, context)

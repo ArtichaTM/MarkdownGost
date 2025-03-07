@@ -5,7 +5,7 @@ from mgost.settings import Settings
 from mgost.context import Context
 from mgost.types.run import Run
 from mgost.types.mixins import AddableToParagraph, AddableToDocument
-from mgost.macros import macros_mixins
+from mgost.macros import macros_mixins, get_macroses
 
 from docx.document import Document as _Document
 from docx.text.paragraph import Paragraph as _Paragraph
@@ -54,7 +54,7 @@ class Macros(Run):
         self.command = command
         self.value = value
         self.args = args
-        cl = Settings.get().macroses.get(self.command, None)
+        cl = get_macroses().get(self.command, None)
         if cl is None:
             self.cl = None
         else:

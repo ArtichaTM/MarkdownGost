@@ -1,4 +1,3 @@
-from typing import Generator
 from pathlib import Path
 from importlib import import_module
 from logging import warning
@@ -6,9 +5,14 @@ from logging import warning
 from . import _mixins as macros_mixins
 
 
-def iter_macroses() -> Generator[tuple[
-    str, type[macros_mixins.MacrosBase]
-], None, None]:
+__macroses: dict[str, type[macros_mixins.MacrosBase]] | None = None
+
+
+def get_macroses() -> dict[str, type[macros_mixins.MacrosBase]]:
+    global __macroses
+    if __macroses is not None:
+        return __macroses
+    __macroses = dict()
     p = Path(__file__).parent
     name = None
     key = None
@@ -27,7 +31,5 @@ def iter_macroses() -> Generator[tuple[
                 f' derived from {macros_mixins.MacrosBase}'
             )
             continue
-        yield macros_cl.get_name(), macros_cl
-    del name
-    del p
-    del key
+        __macroses[macros_cl.get_name()] = macros_cl
+    return __macroses
