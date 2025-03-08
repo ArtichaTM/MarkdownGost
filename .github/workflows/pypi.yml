@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    tags:
-      - "*"
+    tags: ['[1-9]+.[0-9]+']
   workflow_dispatch:
 
 jobs:
