@@ -119,7 +119,7 @@ class Image(BaseMedia):
         with (
             ContextVariable(context, 'paragraph_style', 'Image')
         ):
-            path = context.current_file_path.parent / self.src
+            path = context.source.parent / self.src
             if not path.exists():
                 print(
                     f"File {path} does not exist. "
@@ -277,12 +277,12 @@ class Formula(BaseMedia, AddableToParagraph):
             self.title, context, increase_counter=increase_counter
         )
 
-        add_formula(formula_p, self.text)
+        add_formula(formula_p, self.text, context)
         numbering_p.add_run(f"({counter_h}.{counter_curr})")
         d.add_paragraph()
 
     def add_to_paragraph(self, p, context):
-        add_formula(p, self.text)
+        add_formula(p, self.text, context)
         return []
 
     @staticmethod

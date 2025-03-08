@@ -3,7 +3,6 @@ from datetime import datetime
 from re import findall
 
 from ._base import SourceConverter
-from mgost.settings import Settings
 
 
 @dataclass
@@ -69,7 +68,7 @@ class Converter(SourceConverter):
         assert '.' in work_id, work_id
 
         url = f'https://export.arxiv.org/api/query?id_list={work_id}v1'
-        page = Settings.get().internet_connection(url, url_expire=-1.0)
+        page = context.internet_connection(url, url_expire=-1.0)
 
         if page is None:
             p.add_run("- Error during requesting site -")

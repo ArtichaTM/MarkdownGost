@@ -4,7 +4,6 @@ from pathlib import Path
 from logging import warning
 
 from ._mixins import AfterDocxCreation, DuringDocxCreation
-from mgost.settings import Settings
 
 
 def exec_code(file_path: Path, q: Queue):
@@ -34,7 +33,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
     def process_during_docx_creation(self, p, context):
         self.process = None
         file_name = self.macros.value
-        current_folder = context.current_file_path.parent
+        current_folder = context.source.parent
         file_path = current_folder / file_name
         if not file_path.exists():
             text = f"<File {file_name} does not exist>"
@@ -61,7 +60,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
         if self.process is None:
             return
         try:
-            self.process.join(timeout=Settings.get().code_run_timeout)
+            self.process.join(timeout=context.code_run_timeout)
         except TimeoutError:
             text = f"<Timeout for code in {self.macros.value}>"
             warning(text[1:-1])

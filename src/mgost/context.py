@@ -7,12 +7,25 @@ from typing import TYPE_CHECKING, Any, Generator, Hashable, MutableMapping
 import sympy
 from docx.document import Document
 from docx.oxml.xmlchemy import BaseOxmlElement
+from lxml.etree import XSLT, parse as etree_parse
 
 if TYPE_CHECKING:
+    from mgost.internet_connector import InternetConnection
     from mgost.macros import macros_mixins
     from mgost.types.abstract import AbstractElement
     from mgost.types.complex.sources import Sources
     from mgost.types.simple import Root
+
+
+DEFAULT_USER_AGENT: str = (
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+    'AppleWebKit/537.36 (KHTML, like Gecko) '
+    'Chrome/88.0.4324.150 Safari/537.36 '
+    'RuxitSynthetic/1.0 v6278345041414680700 '
+    't4399065582540647721 ath1fb31b7a '
+    'altpriv cvcv=2 smf=0'
+)
+assert isinstance(DEFAULT_USER_AGENT, str)
 
 
 @dataclass(frozen=True)
@@ -54,6 +67,22 @@ class Counters:
         other.bookmarks = self.bookmarks.copy()
 
 
+class Paths:
+    __slots__ = (
+        'module_root',
+        'base_docx',
+        'mml2omml',
+    )
+
+    def __init__(
+        self,
+        module_root: Path
+    ) -> None:
+        self.module_root = module_root
+        self.base_docx = self.module_root / '_base.docx'
+        self.mml2omml = self.module_root / 'MML2OMML.xsl'
+
+
 class Context(dict):
     """ Contains document building context
     Probable variables based on context:
@@ -70,17 +99,26 @@ class Context(dict):
     """
     __slots__ = (
         'source', 'output',
+        'code_run_timeout', 'internet_connection',
+        'user_agent', 'current_file_path',
 
         'd', 'counters', 'root',
         'variables', 'mentions',
         'post_process_links', 'post_docx_macroses',
         'formula_symbols', 'sources',
         'list_marker_info', 'list_digit_info',
-        'table_name', 'current_file_path',
+        'table_name',
     )
+    # Module-wide, class constants
     _global_context: 'Context | None' = None
+    paths = Paths(Path(__file__).parent)
+    _mml2omml_xslt: XSLT | None = None
+
     source: Path
     output: Path | BytesIO
+    code_run_timeout: int
+    internet_connection: 'InternetConnection'
+    user_agent: str
 
     d: Document
     counters: Counters
@@ -101,23 +139,39 @@ class Context(dict):
     def __init__(
         self,
         source: Path,
-        output: Path | BytesIO
+        output: Path | BytesIO,
+        /,
+        temp_folder_path: Path | None = None,
+        user_agent: str = DEFAULT_USER_AGENT,
+        code_run_timeout: int = 1,
     ):
         # Argument assertions
         assert isinstance(source, Path), source
         assert isinstance(output, (Path | BytesIO)), output
         assert source.exists()
-
-        # Setting arguments
-        self.source = source
-        self.output = output
-
-        # Dict init
-        super().__init__()
+        assert any((
+            temp_folder_path is None,
+            isinstance(temp_folder_path, Path)
+        ))
+        assert user_agent is None or isinstance(user_agent, str)
+        assert isinstance(code_run_timeout, int)
 
         # Imports. They are here
         # bcz context should be independent during file imports
         from mgost.types.complex.sources import Sources
+        from mgost.internet_connector import InternetConnection
+
+        # Setting arguments
+        self.source = source
+        self.output = output
+        self.internet_connection = InternetConnection(
+            temp_folder_path, self
+        )
+        self.user_agent = user_agent
+        self.code_run_timeout = code_run_timeout
+
+        # Dict init
+        super().__init__()
 
         self.counters = Counters()
         self.variables = dict()
@@ -137,6 +191,17 @@ class Context(dict):
         return f"<Settings -> {self.output}>"
 
     @classmethod
+    def mml2omml_xslt(cls) -> XSLT:
+        xslt = cls._mml2omml_xslt
+        if xslt is None:
+            path = cls.paths.mml2omml
+            assert path.exists()
+            assert path.is_file()
+            xslt = XSLT(etree_parse(cls.paths.mml2omml))  # type: ignore
+            cls._mml2omml_xslt = xslt
+        return xslt
+
+    @classmethod
     def global_context(cls) -> 'Context':
         assert cls._global_context is not None
         return cls._global_context
@@ -147,9 +212,16 @@ class Context(dict):
         for elements in self.root.walk():
             yield elements
 
+    def close(self) -> None:
+        assert self.internet_connection is not None
+        self.internet_connection.close()
+
 
 class ContextVariable:
-    __slots__ = ('target', 'key', 'previous_value', 'new_value', 'skip')
+    __slots__ = (
+        'target', 'key', 'previous_value',
+        'new_value', 'skip'
+    )
 
     def __init__(
         self,

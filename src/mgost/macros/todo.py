@@ -10,5 +10,5 @@ class Macros(Instant):
             value = f": {self.macros.value}"
         else:
             value = ''
-        print(f"TODO in file {context.current_file_path}: {value}")
+        print(f"TODO in file {context.source}: {value}")
         return []

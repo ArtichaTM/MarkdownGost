@@ -6,11 +6,14 @@ from typing import Literal
 
 import requests
 
-from mgost.settings import Settings
+from .context import Context
 
 
 class RequestResultInfo:
-    __slots__ = ('_result', 'url', 'method', 'expire_time', 'creation_time')
+    __slots__ = (
+        '_result', 'url', 'method', 'context',
+        'expire_time', 'creation_time'
+    )
     url: str
     method: Literal['GET'] | Literal['HEAD']
     _result: requests.Response | None
@@ -21,17 +24,20 @@ class RequestResultInfo:
         self,
         url: str,
         method: Literal['GET'] | Literal['HEAD'],
+        context: Context,
         expire_time: float = -1.0,
-        creation_time: float | None = None
+        creation_time: float | None = None,
     ) -> None:
         assert isinstance(url, str)
         assert isinstance(method, str)
+        assert isinstance(context, Context)
         assert isinstance(expire_time, float)
         assert creation_time is None or isinstance(creation_time, float)
         if creation_time is None:
             self.creation_time = 0.0
         self.url = url
         self.method = method
+        self.context = context
         self.expire_time = expire_time
         assert not hasattr(self, '_result')
         self._result = None
@@ -75,7 +81,7 @@ class RequestResultInfo:
             self.url,
             timeout=1.,
             headers={
-                'User-Agent': Settings.get().user_agent
+                'User-Agent': self.context.user_agent
             }
         )
 
@@ -99,7 +105,7 @@ class RequestResultInfo:
 
 
 class InternetConnection:
-    __slots__ = ('path_file', '_cache', 'agent')
+    __slots__ = ('_cache', 'path_file', 'agent', 'context')
     _FILE_NAME: str = 'internet_cache.pkl'
     cache_folder_path: Path | None
     _cache: dict[str, RequestResultInfo]
@@ -107,9 +113,12 @@ class InternetConnection:
 
     def __init__(
         self,
-        cache_folder: Path | None
+        cache_folder: Path | None,
+        context: Context
     ) -> None:
         assert cache_folder is None or isinstance(cache_folder, Path)
+        assert isinstance(context, Context)
+        self.context = context
         self._cache = dict()
 
         if cache_folder is None:
@@ -137,7 +146,9 @@ class InternetConnection:
         assert '://' in url, url
         info = self._cache.get(url, None)
         if info is None:
-            info = RequestResultInfo(url, method, url_expire)
+            info = RequestResultInfo(
+                url, method, self.context, url_expire
+            )
             self._cache[url] = info
 
         try:

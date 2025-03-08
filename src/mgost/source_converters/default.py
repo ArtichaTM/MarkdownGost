@@ -3,7 +3,6 @@ from logging import warning
 from random import random
 
 from ._base import SourceConverter
-from mgost.settings import Settings
 
 
 def find_enclosed(text: str, tag: str) -> tuple[str, int, int]:
@@ -37,7 +36,7 @@ class Converter(SourceConverter):
     def parse(self, p, parsed_result, context):
         url = parsed_result.geturl()
         try:
-            page = Settings.get().internet_connection(
+            page = context.internet_connection(
                 url,
                 url_expire=60*60*24*7.0
             )

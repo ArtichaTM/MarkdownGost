@@ -6,7 +6,6 @@ from lxml import etree
 
 from .low_functions import add_hyperlink, add_linked_run
 from mgost.context import Context
-from mgost.settings import Settings
 
 __all__ = ('init_paragraph', 'add_run',)
 
@@ -58,9 +57,8 @@ def add_run(text: str | None, p: _Paragraph, context: Context) -> _Run | None:
     return run
 
 
-def add_formula(p: _Paragraph, text: str) -> None:
+def add_formula(p: _Paragraph, text: str, /, context: Context) -> None:
     from latex2mathml.converter import convert as latex2mathml
-    settings = Settings.get()
 
     math_mls = [latex2mathml(i) for i in text.split('=')]
 
@@ -68,5 +66,5 @@ def add_formula(p: _Paragraph, text: str) -> None:
 
     string = MATHML_STRING.format(math_omml)
     tree = etree.fromstring(string)  # type: ignore
-    new_dom = settings.mml2omml_xslt(tree)
+    new_dom = context.mml2omml_xslt()(tree)
     p._p.append(new_dom.getroot())
