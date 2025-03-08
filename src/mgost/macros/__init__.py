@@ -1,9 +1,8 @@
-from pathlib import Path
 from importlib import import_module
 from logging import warning
+from pathlib import Path
 
 from . import _mixins as macros_mixins
-
 
 __macroses: dict[str, type[macros_mixins.MacrosBase]] | None = None
 

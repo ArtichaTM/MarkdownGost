@@ -1,19 +1,18 @@
-from typing import TYPE_CHECKING
-from pathlib import Path
 from abc import abstractmethod
-from io import StringIO, BytesIO
+from io import BytesIO, StringIO
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import PIL.Image
 from docx.document import Document as _Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches
 
+from .functions import add_formula, add_run, init_paragraph
+from .mixins import AddableToDocument, AddableToParagraph, HasText, ListElement
 from mgost.context import Context, ContextVariable
 from mgost.exceptions import VariablesConflict
-from .mixins import AddableToDocument, AddableToParagraph, HasText, ListElement
-from .functions import init_paragraph, add_run, add_formula
-
 
 if TYPE_CHECKING:
     from .simple import Paragraph

@@ -1,9 +1,9 @@
+from io import StringIO
 from multiprocessing import Process, Queue
 from pathlib import Path
-from io import StringIO
 
+from ._mixins import AfterDocxCreation, DuringDocxCreation
 from mgost.settings import Settings
-from ._mixins import DuringDocxCreation, AfterDocxCreation
 
 
 def exec_code(file_path: Path, q: Queue):

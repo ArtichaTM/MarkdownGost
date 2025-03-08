@@ -1,8 +1,8 @@
-from typing import Literal
+import pickle
+from logging import warning
 from pathlib import Path
 from time import time
-from logging import warning
-import pickle
+from typing import Literal
 
 import requests
 

@@ -1,11 +1,11 @@
 from pathlib import Path
 from xml.etree import ElementTree as et
 
+from marko.ext.gfm import gfm
+
 from .parser import parse_element
 from mgost.context import Context
 from mgost.types.simple import Root
-
-from marko.ext.gfm import gfm
 
 
 def parse_from_text(value: str, context: Context) -> Root:

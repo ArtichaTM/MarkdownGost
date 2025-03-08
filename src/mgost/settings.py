@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING, Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from lxml import etree
 
 if TYPE_CHECKING:
-    from mgost.macros import macros_mixins
-    from mgost.source_converters import SourceConverter
     from mgost.internet_connector import InternetConnection
-    from mgost.context import Context
 
 
 __all__ = (

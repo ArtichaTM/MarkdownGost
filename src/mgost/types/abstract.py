@@ -1,6 +1,5 @@
-from typing import Any, Generator
 from abc import ABC, abstractmethod
-
+from typing import Any, Generator
 
 __all__ = ('AbstractElement', )
 

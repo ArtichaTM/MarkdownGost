@@ -1,15 +1,15 @@
 from typing import Sequence
-from xml.etree import ElementTree as et
 from urllib.parse import unquote
+from xml.etree import ElementTree as et
 
-from mgost.context import Context
-from mgost.types.macros import Macros
-from mgost.types.lists import ListBullet, ListNumbered
-from mgost.types.media import Image, Table
-from mgost.types.run import Run
-from mgost.types.simple import Root, Paragraph, Heading
-from mgost.types.mixins import AddableToDocument, AddableToParagraph
 from .exceptions import UnknownTag
+from mgost.context import Context
+from mgost.types.lists import ListBullet, ListNumbered
+from mgost.types.macros import Macros
+from mgost.types.media import Image, Table
+from mgost.types.mixins import AddableToDocument, AddableToParagraph
+from mgost.types.run import Run
+from mgost.types.simple import Heading, Paragraph, Root
 
 
 def parse_plain_text(

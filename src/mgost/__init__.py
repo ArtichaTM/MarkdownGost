@@ -1,17 +1,16 @@
 from argparse import ArgumentParser, Namespace
-from pathlib import Path
 from io import BytesIO
 from logging import warning
+from pathlib import Path
 
 from docx import Document
 
-from .context import Context
-from .settings import Settings
 from . import exceptions
+from .context import Context
 from .md_converter import parse as parse_md
+from .settings import Settings
 from .types.simple import Root
 from mgost.post_processors import get_post_processors
-
 
 __all__ = (
     'convert',

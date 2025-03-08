@@ -1,15 +1,14 @@
-from typing import Sequence
 from dataclasses import replace
-
-from mgost.settings import Settings
-from mgost.context import Context
-from mgost.types.run import Run
-from mgost.types.mixins import AddableToParagraph, AddableToDocument
-from mgost.macros import macros_mixins, get_macroses
+from typing import Sequence
 
 from docx.document import Document as _Document
 from docx.text.paragraph import Paragraph as _Paragraph
 from docx.text.run import Run as _Run
+
+from mgost.context import Context
+from mgost.macros import get_macroses, macros_mixins
+from mgost.types.mixins import AddableToDocument, AddableToParagraph
+from mgost.types.run import Run
 
 
 class Macros(Run):

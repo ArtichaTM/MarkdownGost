@@ -1,8 +1,8 @@
 from typing import Generator
 
 from mgost.context import Context
-from mgost.types.mixins import AddableToDocument
 from mgost.types.bases import ListBase
+from mgost.types.mixins import AddableToDocument
 
 
 class ListBullet(ListBase):

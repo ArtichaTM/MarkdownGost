@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING, Literal
+
 from mgost.context import Context
-
-from mgost.types.simple import Heading
-from mgost.types.run import Run
 from mgost.types.mixins import HasText
-
+from mgost.types.run import Run
+from mgost.types.simple import Heading
 
 if TYPE_CHECKING:
     from mgost.types.complex.sources import SourceLine

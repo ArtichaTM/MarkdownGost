@@ -1,10 +1,10 @@
 from docx.document import Document as _Document
-from docx.text.paragraph import Paragraph as _Paragraph
-from docx.table import Table as _Table
-from docx.text.run import Run as _Run
-from docx.oxml.parser import OxmlElement
-from docx.oxml.ns import qn
 from docx.opc.constants import RELATIONSHIP_TYPE
+from docx.oxml.ns import qn
+from docx.oxml.parser import OxmlElement
+from docx.table import Table as _Table
+from docx.text.paragraph import Paragraph as _Paragraph
+from docx.text.run import Run as _Run
 
 from mgost.context import Context
 

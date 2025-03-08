@@ -1,4 +1,4 @@
-from ._mixins import DuringDocxCreation, AfterDocxCreation
+from ._mixins import AfterDocxCreation, DuringDocxCreation
 
 
 class Macros(DuringDocxCreation, AfterDocxCreation):
@@ -14,7 +14,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
         assert len(self.macros.runs) == 1, [i.text for i in self.macros.runs]
         ctx_var = self.macros.value
         if ctx_var not in context:
-            for key, value in context.items():
+            for key in context:
                 assert isinstance(key, str)
                 if key.startswith(ctx_var):
                     ctx_var = key

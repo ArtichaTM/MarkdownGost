@@ -1,12 +1,9 @@
-from typing import Generator
 from abc import abstractmethod
+from typing import Generator
 
 from docx.document import Document as _Document
 
-from .mixins import (
-    ListElement,
-    AddableToDocument
-)
+from .mixins import AddableToDocument, ListElement
 from mgost.context import Context, ContextVariable
 
 

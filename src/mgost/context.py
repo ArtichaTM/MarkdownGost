@@ -1,19 +1,18 @@
-from typing import TYPE_CHECKING, Any, Generator, Hashable, MutableMapping
-from pathlib import Path
 from dataclasses import dataclass, field
 from io import BytesIO
+from pathlib import Path
 from pprint import pformat
+from typing import TYPE_CHECKING, Any, Generator, Hashable, MutableMapping
 
 import sympy
 from docx.document import Document
 from docx.oxml.xmlchemy import BaseOxmlElement
 
-
 if TYPE_CHECKING:
-    from mgost.types.abstract import AbstractElement
-    from mgost.types.simple import Root
-    from mgost.types.complex.sources import Sources
     from mgost.macros import macros_mixins
+    from mgost.types.abstract import AbstractElement
+    from mgost.types.complex.sources import Sources
+    from mgost.types.simple import Root
 
 
 @dataclass(frozen=True)

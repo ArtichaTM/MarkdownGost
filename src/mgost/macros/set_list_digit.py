@@ -1,5 +1,5 @@
-from mgost.context import ListMarkerInfo
 from ._mixins import DuringDocxCreation
+from mgost.context import ListMarkerInfo
 
 
 class Macros(DuringDocxCreation):

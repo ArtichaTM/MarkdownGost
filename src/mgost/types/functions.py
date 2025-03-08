@@ -1,12 +1,12 @@
 from typing import Protocol
 
-from lxml import etree
 from docx.text.paragraph import Paragraph as _Paragraph
 from docx.text.run import Run as _Run
+from lxml import etree
 
-from mgost.settings import Settings
-from mgost.context import Context
 from .low_functions import add_hyperlink, add_linked_run
+from mgost.context import Context
+from mgost.settings import Settings
 
 __all__ = ('init_paragraph', 'add_run',)
 

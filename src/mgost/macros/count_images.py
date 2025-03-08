@@ -1,4 +1,4 @@
-from ._mixins import DuringDocxCreation, AfterDocxCreation
+from ._mixins import AfterDocxCreation, DuringDocxCreation
 
 
 class Macros(DuringDocxCreation, AfterDocxCreation):

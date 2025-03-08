@@ -1,5 +1,4 @@
 from ._mixins import Instant
-
 from mgost.types.media import Formula
 from mgost.types.simple import Run
 

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from re import findall
 
-from mgost.settings import Settings
 from ._base import SourceConverter
+from mgost.settings import Settings
 
 
 @dataclass

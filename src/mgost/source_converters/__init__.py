@@ -3,7 +3,6 @@ from pathlib import Path
 
 from ._base import SourceConverter
 
-
 __converters: dict[str, SourceConverter] | None = None
 
 

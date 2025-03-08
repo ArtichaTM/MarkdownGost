@@ -1,7 +1,7 @@
 from pathlib import Path
-from .settings import Settings
 
 from . import _parse_args, convert
+from .settings import Settings
 
 
 def main():

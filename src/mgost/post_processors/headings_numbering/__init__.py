@@ -1,7 +1,6 @@
 from mgost.context import Context
-
-from mgost.types.simple import Heading
 from mgost.types.run import Run
+from mgost.types.simple import Heading
 
 
 def process_heading(el: Heading, counters: list[int]) -> None:

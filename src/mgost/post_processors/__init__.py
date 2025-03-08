@@ -1,10 +1,8 @@
-from typing import Callable
 from logging import warning
 from pathlib import Path
-
+from typing import Callable
 
 from mgost.context import Context
-
 
 __callables: dict[str, Callable[[Context], None]] | None = None
 

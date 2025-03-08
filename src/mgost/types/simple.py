@@ -1,15 +1,14 @@
-from typing import Sequence
 from pathlib import Path
+from typing import Sequence
 
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-from mgost.context import Context, ContextVariable
-from .functions import init_paragraph, add_run
+from .functions import add_run, init_paragraph
 from .low_functions import add_bookmark, remove_paragraph
 from .media import Image
-from .run import Run
 from .mixins import AddableToDocument, AddableToParagraph, ListElement
-
+from .run import Run
+from mgost.context import Context, ContextVariable
 
 __all__ = ('Root', 'Paragraph', 'Heading')
 

@@ -1,9 +1,9 @@
 from logging import warning
 
 from mgost.context import Context
-from mgost.types.simple import Paragraph, Root
-from mgost.types.run import Run
 from mgost.types.mixins import AbstractElement
+from mgost.types.run import Run
+from mgost.types.simple import Paragraph, Root
 
 
 def replace_el(els: tuple[AbstractElement, ...], context: Context) -> None:

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
-from random import random
 from logging import warning
+from random import random
 
-from mgost.settings import Settings
 from ._base import SourceConverter
+from mgost.settings import Settings
 
 
 def find_enclosed(text: str, tag: str) -> tuple[str, int, int]:

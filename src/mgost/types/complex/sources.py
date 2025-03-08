@@ -1,8 +1,7 @@
-from urllib.parse import urlparse, ParseResult
+from urllib.parse import ParseResult, urlparse
 
 from ..mixins import AddableToDocument, MappingElement
 from mgost.source_converters import get_converters
-
 
 __all__ = ('Sources', 'SourceLine')
 

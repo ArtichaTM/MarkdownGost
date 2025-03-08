@@ -1,12 +1,12 @@
-from typing import Generator
 from abc import abstractmethod
+from typing import Generator
 
-from mgost.context import Context
-from .abstract import AbstractElement
-
-from docx.text.paragraph import Paragraph as _Paragraph
 from docx.document import Document as _Document
+from docx.text.paragraph import Paragraph as _Paragraph
 from docx.text.run import Run as _Run
+
+from .abstract import AbstractElement
+from mgost.context import Context
 
 
 class AddableToParagraph(AbstractElement):

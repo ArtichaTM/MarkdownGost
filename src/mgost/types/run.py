@@ -1,6 +1,6 @@
-from mgost.context import ContextVariable
 from .functions import add_run
-from .mixins import AddableToParagraph, ListElement, HasEditableText
+from .mixins import AddableToParagraph, HasEditableText, ListElement
+from mgost.context import ContextVariable
 
 
 class Run(
