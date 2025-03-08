@@ -9,7 +9,7 @@ packages = [
 
 [project]
 name="mgost"
-version="1.3.1"
+version="1.3.2"
 authors = [
   {name="Геворкян Артём", email="tima-1324@mail.ru"}
 ]

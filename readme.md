@@ -2,6 +2,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mgost.svg?logo=python&logoColor=white)](https://pypi.org/project/mgost/)
 [![Flake8](https://github.com/ArtichaTM/MarkdownGost/actions/workflows/flake8.yml/badge.svg)](https://github.com/ArtichaTM/MarkdownGost/actions/workflows/flake8.yml)
 [![WakaTime](https://wakatime.com/badge/github/ArtichaTM/MarkdownGost.svg)](https://wakatime.com/badge/github/ArtichaTM/MarkdownGost)
+[![GitHub last commit](https://img.shields.io/github/last-commit/ArtichaTM/MarkdownGost?style=flat)](https://github.com/ArtichaTM/MarkdownGost/commit/main)
 
 # MGost
 > Конвертер markdown в документу docx установленного образца
@@ -204,7 +205,7 @@ $ mgost main.md out.docx
 Макрос-помощник. При встрече рендера с данным макросом MGost удаляет его из документа, но выводит об этом уведомление в stdout. ``` `TODO: доделать макияж` ```
 
 ## Кэширование
-В библиотеке предусмотрено кэширование запросов, запрашиваемых с сайтов через макросы или для генерации умного списка источников. По умолчанию функционал включен для cli и выключен для python api. Для его использования требуется создать класс Settings:
+В библиотеке предусмотрено кэширование запросов, запрашиваемых с сайтов через макросы или для генерации умного списка источников. По умолчанию функционал выключен для cli и python api. Для его использования требуется самостоятельно создать класс Context и передать его в функцию конвертации:
 > Без кэширования
 ```python
 from mgost import convert
@@ -214,20 +215,24 @@ convert(Path('main.md'), Path('output.docx'))
 
 > С кэшированием
 ```python
-from mgost import convert, Settings
+from mgost import convert, Context
 
-with Settings(Path('temp')): # В папке temp создаётся pickle файл internet_cache.pkl
-    convert(Path('main.md'), Path('output.docx'))
+convert(Context(
+    Path('main.md'), Path('output.docx'),
+    temp_folder_path=Path('temp') # В папке temp создаётся pickle файл internet_cache.pkl
+))
 ```
 
 > Используя [TemporaryDirectory](https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory)
 ```python
 from tempfile import TemporaryDirectory
-from mgost import convert, Settings
+from mgost import convert, Context
 
 with TemporaryDirectory() as tmpdir:
-    with Settings(Path(tmpdir)):
-        convert(Path('main.md'), Path('output.docx'))
+    convert(Context(
+        Path('main.md'), Path('output.docx'),
+        temp_folder_path=Path(tmpdir) # В папке temp создаётся pickle файл internet_cache.pkl
+    ))
 ```
 
 Примечание: временная папка и файл *internet_cache.pkl* создаётся в независимости от того, был ли запросы в интернет или нет
