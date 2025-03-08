@@ -1,7 +1,7 @@
 from io import StringIO
+from logging import warning
 from multiprocessing import Process, Queue
 from pathlib import Path
-from logging import warning
 
 from ._mixins import AfterDocxCreation, DuringDocxCreation
 

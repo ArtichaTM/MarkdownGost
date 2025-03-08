@@ -2,7 +2,7 @@ from argparse import ArgumentParser, Namespace
 from logging import warning
 from pathlib import Path
 
-from . import exceptions, convert
+from . import convert, exceptions
 
 
 def _build_args_parser() -> ArgumentParser:
@@ -53,6 +53,7 @@ def _parse_args() -> tuple[Path, Path]:
     ) as e:
         print(e.args[0])
         raise e
+
 
 def main():
     source, dest = _parse_args()

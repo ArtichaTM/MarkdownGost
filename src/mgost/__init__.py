@@ -1,15 +1,14 @@
-from typing import overload
 from io import BytesIO
 from pathlib import Path
+from typing import overload
 
 from docx import Document
 
 from . import exceptions
 from .context import Context
 from .md_converter import parse as parse_md
-from .types.simple import Root
 from .post_processors import get_post_processors
-from .context import Context
+from .types.simple import Root
 
 __all__ = (
     'Context',

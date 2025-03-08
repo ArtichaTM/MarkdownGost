@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING, Any, Generator, Hashable, MutableMapping
 import sympy
 from docx.document import Document
 from docx.oxml.xmlchemy import BaseOxmlElement
-from lxml.etree import XSLT, parse as etree_parse
+from lxml.etree import XSLT
+from lxml.etree import parse as etree_parse
 
 if TYPE_CHECKING:
     from mgost.internet_connector import InternetConnection
@@ -158,8 +159,8 @@ class Context(dict):
 
         # Imports. They are here
         # bcz context should be independent during file imports
-        from mgost.types.complex.sources import Sources
         from mgost.internet_connector import InternetConnection
+        from mgost.types.complex.sources import Sources
 
         # Setting arguments
         self.source = source
