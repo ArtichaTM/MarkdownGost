@@ -341,6 +341,17 @@ class Listing(BaseMedia, AddableToParagraph):
         add_formula(p, self.text, context)
         return []
 
+    @classmethod
+    def mention(
+        cls,
+        headings: list[int],
+        counter: dict[int, int]
+    ) -> str:
+        return (
+            f"{cls.short_name()} "
+            f"{counter.get(headings[0], 0)+1}"
+        )
+
     @staticmethod
     def counter(counters) -> dict[int, int]:
         return counters.appendix
