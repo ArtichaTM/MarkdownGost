@@ -23,7 +23,8 @@ def parse_plain_text(
 
 
 def _parse_text(
-    element: et.Element
+    element: et.Element,
+    context: Context
 ) -> list[AddableToParagraph] | AddableToDocument:
     assert isinstance(element, et.Element)
     runs: list[AddableToParagraph] | None = None
@@ -43,7 +44,7 @@ def _parse_text(
         case 'code':
             assert element.text is not None
             temp = Macros(element.text, element.tail)
-            temp = temp.replace(Context.global_context())
+            temp = temp.replace(context)
             if isinstance(temp, AddableToDocument):
                 return temp
             assert isinstance(temp, list), f"{type(temp).__qualname__}({temp})"
@@ -58,7 +59,7 @@ def _parse_text(
 
     for child in element:
         try:
-            temp = _parse_text(child)
+            temp = _parse_text(child, context)
             if isinstance(temp, AddableToDocument):
                 return temp
             assert isinstance(temp, list)
@@ -70,7 +71,10 @@ def _parse_text(
     return runs
 
 
-def _parse_li(element: et.Element) -> Sequence[AddableToDocument]:
+def _parse_li(
+    element: et.Element,
+    context: Context
+) -> Sequence[AddableToDocument]:
     assert isinstance(element, et.Element)
     assert element.tag == 'li'
     runs: list[AddableToParagraph] = [Run(element.text, element.tail)]
@@ -78,7 +82,7 @@ def _parse_li(element: et.Element) -> Sequence[AddableToDocument]:
 
     for child in element:
         try:
-            new_runs = _parse_text(child)
+            new_runs = _parse_text(child, context)
         except UnknownTag:
             pass
         else:
@@ -92,7 +96,7 @@ def _parse_li(element: et.Element) -> Sequence[AddableToDocument]:
             elements.append(Paragraph(runs))
             runs = []
 
-        new_elements = _parse_element(child)  # type: ignore
+        new_elements = _parse_element(child, context)  # type: ignore
         assert isinstance(new_elements, list)
         assert all(isinstance(i, AddableToDocument) for i in new_elements)
         new_elements: list[AddableToDocument]
@@ -105,11 +109,11 @@ def _parse_li(element: et.Element) -> Sequence[AddableToDocument]:
     return elements
 
 
-def _parse_table_row(element: et.Element) -> list[Paragraph]:
+def _parse_table_row(element: et.Element, context: Context) -> list[Paragraph]:
     output: list[Paragraph] = []
     assert element.tag == 'tr', element.tag
     for column in element:
-        runs = _parse_text(column)
+        runs = _parse_text(column, context)
         assert isinstance(runs, list)
         if runs and isinstance(runs[-1], Run) and runs[-1].start:
             start = runs[-1].start
@@ -119,26 +123,27 @@ def _parse_table_row(element: et.Element) -> list[Paragraph]:
     return output
 
 
-def _parse_table(element: et.Element) -> Table:
+def _parse_table(element: et.Element, context: Context) -> Table:
     output: list[list[Paragraph]] = []
     thead, tbody = element
 
     thead = thead.find('tr')
     assert thead is not None
-    output.append(_parse_table_row(thead))
+    output.append(_parse_table_row(thead, context))
     for p in output[0]:
         for run in p.elements:
             assert isinstance(run, Run)
             run.bold = True
 
     for tr in tbody:
-        output.append(_parse_table_row(tr))
+        output.append(_parse_table_row(tr, context))
 
     return Table(output)
 
 
 def _parse_element(
-    element: et.Element
+    element: et.Element,
+    context: Context
 ) -> Sequence[AddableToDocument] | Sequence[AddableToParagraph] | Root:
     elements: Sequence[AddableToDocument]
     runs: list[AddableToParagraph]
@@ -147,7 +152,7 @@ def _parse_element(
             elements = []
             for child in element:
                 assert isinstance(child, et.Element), type(child)
-                new_elements = _parse_element(child)  # type: ignore
+                new_elements = _parse_element(child, context)  # type: ignore
                 assert not isinstance(new_elements, Root)
                 assert all(isinstance(
                     i, AddableToDocument
@@ -159,7 +164,7 @@ def _parse_element(
         case 'h1' | 'h2' | 'h3':
             runs: list[AddableToParagraph] = [Run(element.text, element.tail)]
             for child in element:
-                temp = _parse_text(child)
+                temp = _parse_text(child, context)
                 if isinstance(temp, AddableToDocument):
                     return [temp]
                 runs.extend(temp)
@@ -177,16 +182,14 @@ def _parse_element(
                     assert isinstance(alt, str)
                     title = child.attrib.get('title', None)
                     assert title is None or isinstance(title, str)
-                    parsed_alt = parse_plain_text(
-                        alt, Context.global_context()
-                    )
+                    parsed_alt = parse_plain_text(alt, context)
                     image = Image(
                         src=src,
                         alt=parsed_alt,  # type: ignore
                         title=title
                     )
                     return [image]
-                t = _parse_text(child)
+                t = _parse_text(child, context)
                 if isinstance(t, AddableToDocument):
                     return [t]
                 runs.extend(t)
@@ -200,30 +203,30 @@ def _parse_element(
             elements = []
             for li in element:
                 assert li.tag == 'li'
-                elements.extend(_parse_li(li))
+                elements.extend(_parse_li(li, context))
             assert elements
             return [ListBullet(elements)]
         case 'ol':
             elements = []
             for li in element:
                 assert li.tag == 'li'
-                elements.extend(_parse_li(li))
+                elements.extend(_parse_li(li, context))
             assert elements
             return [ListNumbered(elements)]
         case 'pre':
             code_el = element[0]
             assert code_el.tag == 'code'
-            result = _parse_text(code_el)
+            result = _parse_text(code_el, context)
             if isinstance(result, list):
                 return [Paragraph(result)]
             return [result]
         case 'table':
-            return [_parse_table(element)]
+            return [_parse_table(element, context)]
         case _:
             raise UnknownTag(f"What is {element.tag}?")
 
 
 def parse_element(element: et.Element, context: Context) -> Root:
-    output = _parse_element(element)
+    output = _parse_element(element, context)
     assert isinstance(output, Root)
     return output

@@ -114,7 +114,6 @@ class Context(dict[str, 'AbstractElement']):
         'table_name',
     )
     # Module-wide, class constants
-    _global_context: 'Context | None' = None
     paths = Paths(Path(__file__).parent)
     _mml2omml_xslt: XSLT | None = None
 
@@ -187,10 +186,6 @@ class Context(dict[str, 'AbstractElement']):
         self.post_docx_macroses = []
         self.sources = Sources()
 
-        # Setting global context. Global context is the first context created
-        if self._global_context is None:
-            type(self)._global_context = self
-
     def __repr__(self) -> str:
         return f"<Settings -> {self.output}>"
 
@@ -204,11 +199,6 @@ class Context(dict[str, 'AbstractElement']):
             xslt = XSLT(etree_parse(cls.paths.mml2omml))  # type: ignore
             cls._mml2omml_xslt = xslt
         return xslt
-
-    @classmethod
-    def global_context(cls) -> 'Context':
-        assert cls._global_context is not None
-        return cls._global_context
 
     def walk_roots(self) -> Generator[
         tuple['AbstractElement', ...], None, None
