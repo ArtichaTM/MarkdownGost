@@ -46,12 +46,12 @@ class BaseMedia(ListElement[HasText], AddableToDocument):
         counter_cl = self.counter(context.counters)
         heading_num = context.counters.headings[0]
         if heading_num not in counter_cl:
-            counter_cl[heading_num] = 1
+            counter_cl[heading_num] = 0
         counter = counter_cl[heading_num]
         if increase_counter:
             counter_cl[heading_num] += 1
 
-        return heading_num, counter
+        return heading_num, counter+1
 
     @classmethod
     def mention(
