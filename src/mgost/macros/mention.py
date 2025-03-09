@@ -1,3 +1,5 @@
+from logging import warning
+
 from ._mixins import AfterDocxCreation, DuringDocxCreation
 
 
@@ -21,12 +23,13 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
                     break
         if ctx_var not in context:
             error = f"No variable named {ctx_var}"
-            print(error)
+            warning(error)
             self.macros.runs[0].text = error
+            return
         value = context[ctx_var]
         if not isinstance(value, BaseMedia):
             error = f"Can't mention {type(value).__qualname__}"
-            print(error)
+            warning(error)
             self.macros.runs[0].text = error
         counters = self.macros.counters
         self.macros.runs[0].text = value.mention(
