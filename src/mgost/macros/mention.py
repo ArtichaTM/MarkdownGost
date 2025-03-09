@@ -31,6 +31,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
             error = f"Can't mention {type(value).__qualname__}"
             warning(error)
             self.macros.runs[0].text = error
+        assert isinstance(value, BaseMedia)
         counters = self.macros.counters
         self.macros.runs[0].text = value.mention(
             counters.headings,
