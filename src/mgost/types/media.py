@@ -351,12 +351,18 @@ class Listing(BaseMedia, AddableToParagraph):
     def mention(
         cls,
         headings: list[int],
-        counter: dict[int, int]
+        counter: dict[int, int],
+        only_number: bool = False
     ) -> str:
-        return (
-            f"{cls.short_name()} "
-            f"{counter.get(headings[0], 0)+1}"
-        )
+        if only_number:
+            return (
+                f"{counter.get(headings[0], 0)+1}"
+            )
+        else:
+            return (
+                f"{cls.short_name()} "
+                f"{counter.get(headings[0], 0)+1}"
+            )
 
     @staticmethod
     def counter(counters) -> dict[int, int]:
