@@ -22,6 +22,15 @@ if TYPE_CHECKING:
 class BaseMedia(ListElement[HasText], AddableToDocument):
     __slots__ = ()
 
+    def add_variable(
+        self,
+        title: str, to: 'BaseMedia',
+        context: Context
+    ) -> None:
+        if title in context:
+            raise VariablesConflict(f"Переменная {title} объявляется повторно")
+        context[title] = self
+
     def initialize_variable(
         self,
         title: str,
@@ -32,9 +41,7 @@ class BaseMedia(ListElement[HasText], AddableToDocument):
         assert isinstance(context, Context)
         assert isinstance(increase_counter, bool)
 
-        if title in context:
-            raise VariablesConflict(f"Переменная {title} объявляется повторно")
-        context[title] = self
+        self.add_variable(title, self, context)
 
         counter_cl = self.counter(context.counters)
         heading_num = context.counters.headings[0]
@@ -261,8 +268,8 @@ class Formula(BaseMedia, AddableToParagraph):
     def add_to_document(self, d: _Document, context: Context) -> None:
         table = d.add_table(1, 2)
         formula_cell, numbering_cell = table.rows[0].cells
-        formula_p = formula_cell.add_paragraph()
-        numbering_p = numbering_cell.add_paragraph()
+        formula_p = formula_cell.paragraphs[0]
+        numbering_p = numbering_cell.paragraphs[0]
 
         page_width = d.sections[-1].page_width
         assert page_width is not None
@@ -293,5 +300,57 @@ class Formula(BaseMedia, AddableToParagraph):
     def short_name() -> str:
         return 'формула'
 
-    def as_dict(self):
-        return dict()
+    def as_dict(self):  # type: ignore
+        return {
+            'title': self.title,
+            'text': self.text[:50]
+        }
+
+
+class Listing(BaseMedia, AddableToParagraph):
+    __slots__ = ('text', 'title')
+    text: str
+    title: str
+
+    def __init__(self, title: str, text: str) -> None:
+        super().__init__()
+        assert isinstance(title, str)
+        assert isinstance(text, str)
+        self.title = title
+        self.text = text
+
+    def add_to_document(self, d: _Document, context: Context) -> None:
+        increase_counter = True
+        if self.title.startswith('*'):
+            self.title = self.title[1:]
+            increase_counter = False
+        _, counter_curr = self.initialize_variable(
+            self.title, context, increase_counter=increase_counter
+        )
+        d.add_paragraph(f"Листинг {counter_curr}. {self.title}")
+
+        table = d.add_table(1, 1, style='Table Grid')
+        cell = table.rows[0].cells[0]
+        text_paragraph = cell.paragraphs[0]
+        text_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+        text_paragraph.add_run(self.text)
+        d.add_paragraph()
+
+    def add_to_paragraph(self, p, context):
+        add_formula(p, self.text, context)
+        return []
+
+    @staticmethod
+    def counter(counters) -> dict[int, int]:
+        return counters.appendix
+
+    @staticmethod
+    def short_name() -> str:
+        return 'листинг'
+
+    def as_dict(self):  # type: ignore
+        return {
+            'title': self.title,
+            'text': self.text[:50]
+        }

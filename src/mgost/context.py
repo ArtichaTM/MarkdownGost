@@ -42,6 +42,7 @@ class Counters:
     image: dict[int, int] = field(default_factory=dict, init=False)
     table: dict[int, int] = field(default_factory=dict, init=False)
     formula: dict[int, int] = field(default_factory=dict, init=False)
+    appendix: dict[int, int] = field(default_factory=dict, init=False)
     bookmarks: dict[str, 'AbstractElement'] = field(
         default_factory=dict, init=False
     )
@@ -49,7 +50,7 @@ class Counters:
     def __repr__(self) -> str:
         return (
             f"<C {self.headings},{self.image},{self.table},"
-            f"{self.formula},{self.bookmarks}>"
+            f"{self.formula},{self.appendix},{self.bookmarks}>"
         )
 
     def __str__(self) -> str:
@@ -57,7 +58,8 @@ class Counters:
             "Images: " + pformat(self.image) +
             "\nTables: " + pformat(self.image) +
             "\nFormulas: " + pformat(self.image) +
-            "\nBookmarks: " + pformat(self.image)
+            "\nBookmarks: " + pformat(self.image) +
+            "\nAppendix: " + pformat(self.appendix)
         )
 
     def copy_to(self, other: 'Counters'):
@@ -65,6 +67,7 @@ class Counters:
         other.image = self.image.copy()
         other.table = self.table.copy()
         other.formula = self.formula.copy()
+        other.appendix = self.appendix.copy()
         other.bookmarks = self.bookmarks.copy()
 
 
@@ -84,7 +87,7 @@ class Paths:
         self.mml2omml = self.module_root / 'MML2OMML.xsl'
 
 
-class Context(dict):
+class Context(dict[str, 'AbstractElement']):
     """ Contains document building context
     Probable variables based on context:
     <paragraph_style>: style of the current paragraph.
