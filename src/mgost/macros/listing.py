@@ -7,6 +7,8 @@ from mgost.types.media import Listing
 class Macros(Instant):
     """Places listing"""
     __slots__ = ()
+    # TODO: implement convert from `.ipynb` to `.py`
+    # jupyter nbconvert mynotebook.ipynb --to python
 
     def process_instant(self, context):
         path = context.source.parent / self.macros.value
