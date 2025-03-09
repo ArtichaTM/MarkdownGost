@@ -33,7 +33,13 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
             self.macros.runs[0].text = error
         assert isinstance(value, BaseMedia)
         counters = self.macros.counters
+
+        only_number = False
+        if 'only_number' in self.macros.args:
+            only_number = True
+
         self.macros.runs[0].text = value.mention(
             counters.headings,
-            value.counter(counters)
+            value.counter(counters),
+            only_number=only_number
         )

@@ -57,12 +57,18 @@ class BaseMedia(ListElement[HasText], AddableToDocument):
     def mention(
         cls,
         headings: list[int],
-        counter: dict[int, int]
+        counter: dict[int, int],
+        only_number: bool = False
     ) -> str:
-        return (
-            f"{cls.short_name()} "
-            f"{headings[0]}.{counter.get(headings[0], 0)+1}"
-        )
+        if only_number:
+            return (
+                f"{headings[0]}.{counter.get(headings[0], 0)+1}"
+            )
+        else:
+            return (
+                f"{cls.short_name()} "
+                f"{headings[0]}.{counter.get(headings[0], 0)+1}"
+            )
 
     @staticmethod
     @abstractmethod
