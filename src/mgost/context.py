@@ -12,7 +12,7 @@ from lxml.etree import parse as etree_parse
 
 if TYPE_CHECKING:
     from mgost.internet_connector import InternetConnection
-    from mgost.macros import macros_mixins
+    from mgost.macros import MacrosFlags, macros_mixins
     from mgost.types.abstract import AbstractElement
     from mgost.types.complex.sources import Sources
     from mgost.types.simple import Root
@@ -105,6 +105,7 @@ class Context(dict[str, 'AbstractElement']):
         'source', 'output',
         'code_run_timeout', 'internet_connection',
         'user_agent', 'current_file_path',
+        'macros_permissions',
 
         'd', 'counters', 'root',
         'variables', 'mentions',
@@ -145,9 +146,16 @@ class Context(dict[str, 'AbstractElement']):
         output: Path | BytesIO,
         /,
         temp_folder_path: Path | None = None,
-        user_agent: str = DEFAULT_USER_AGENT,
-        code_run_timeout: int = 1,
+        user_agent: str | None = None,
+        code_run_timeout: int | None = None,
+        macros_permissions: 'MacrosFlags | int | None' = None,
     ):
+        # Imports. They are here
+        # bcz context should be independent during file imports
+        from mgost.internet_connector import InternetConnection
+        from mgost.macros import MacrosFlags
+        from mgost.types.complex.sources import Sources
+
         # Argument assertions
         assert isinstance(source, Path), source
         assert isinstance(output, (Path | BytesIO)), output
@@ -156,13 +164,18 @@ class Context(dict[str, 'AbstractElement']):
             temp_folder_path is None,
             isinstance(temp_folder_path, Path)
         ))
-        assert user_agent is None or isinstance(user_agent, str)
-        assert isinstance(code_run_timeout, int)
-
-        # Imports. They are here
-        # bcz context should be independent during file imports
-        from mgost.internet_connector import InternetConnection
-        from mgost.types.complex.sources import Sources
+        assert any((
+            user_agent is None,
+            isinstance(user_agent, str)
+        ))
+        assert any((
+            code_run_timeout is None,
+            isinstance(code_run_timeout, int)
+        ))
+        assert any((
+            macros_permissions is None,
+            isinstance(macros_permissions, (int, MacrosFlags)),
+        ))
 
         # Setting arguments
         self.source = source
@@ -170,8 +183,15 @@ class Context(dict[str, 'AbstractElement']):
         self.internet_connection = InternetConnection(
             temp_folder_path, self
         )
+        if user_agent is None:
+            user_agent = DEFAULT_USER_AGENT
         self.user_agent = user_agent
+        if code_run_timeout is None:
+            code_run_timeout = 1
         self.code_run_timeout = code_run_timeout
+        if macros_permissions is None:
+            macros_permissions = MacrosFlags.DEFAULT
+        self.macros_permissions = macros_permissions
 
         # Dict init
         super().__init__()

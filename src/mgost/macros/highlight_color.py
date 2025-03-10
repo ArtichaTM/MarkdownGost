@@ -1,6 +1,7 @@
 from docx.enum.text import WD_COLOR_INDEX
 
-from ._exceptions import WrongArgument
+from . import logger
+from ._flags import MacrosFlags
 from ._mixins import DuringDocxCreation
 
 
@@ -14,13 +15,24 @@ class Macros(DuringDocxCreation):
 
     def process_during_docx_creation(self, p, context):
         if len(self.macros.args) != 1:
-            raise WrongArgument("One argument is mandatory")
-        if self.macros.args[0] not in {i.name for i in WD_COLOR_INDEX}:
-            raise WrongArgument(
-                f"First argument is not in set {''}"
-                f"{{i.name for i in WD_COLOR_INDEX}}"
+            logger.info(
+                f'Macros "{self.get_name()}" requires at least one argument'
             )
+            return [p.add_run("<Arguments error>")]
+        name = self.macros.args[0]
+        names = {i.name for i in WD_COLOR_INDEX}
+        if name not in names:
+            logger.info(
+                f'Macros "{self.get_name()}" second argument is'
+                f' value from WD_COLOR_INDEX. But {name[:30]}'
+                f' does not element of {names}'
+            )
+            return [p.add_run("<Arguments error>")]
         run = p.add_run(self.macros.value)
         run.font.highlight_color = getattr(WD_COLOR_INDEX, self.macros.args[0])
 
         return [run]
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.NONE

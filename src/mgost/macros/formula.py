@@ -1,3 +1,4 @@
+from ._flags import MacrosFlags
 from ._mixins import Instant
 from mgost.types.media import Formula
 from mgost.types.simple import Run
@@ -15,3 +16,7 @@ class Macros(Instant):
                 bold=True
             )]
         return Formula(self.macros.args[0], self.macros.value)
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.ADD_VARIABLES

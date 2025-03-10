@@ -4,7 +4,3 @@ class SourceDoesNotExist(Exception):
 
 class UnknownSourceFormat(Exception):
     __slots__ = ()
-
-
-class VariablesConflict(Exception):
-    __slots__ = ()

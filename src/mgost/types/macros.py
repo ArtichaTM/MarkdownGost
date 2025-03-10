@@ -1,4 +1,5 @@
 from dataclasses import replace
+from logging import getLogger
 from typing import Sequence
 
 from docx.document import Document as _Document
@@ -9,6 +10,29 @@ from mgost.context import Context
 from mgost.macros import get_macroses, macros_mixins
 from mgost.types.mixins import AddableToDocument, AddableToParagraph
 from mgost.types.run import Run
+
+logger = getLogger(__name__)
+
+
+class ForbiddenMacros(Run):
+    __slots__ = (
+        'name',
+    )
+
+    def __init__(self, name: str):
+        assert isinstance(name, str)
+        super().__init__(name, None)
+        self.paragraph = None
+        self.runs = None
+        self.name = name
+
+    def add_to_paragraph(self, p: _Paragraph, context: Context) -> list[_Run]:
+        runs = [p.add_run("This macros is forbidden for your rights")]
+        logger.warning(
+            f"Trying to use macros {self.name},"
+            " but user have no rights to use it"
+        )
+        return runs
 
 
 class Macros(Run):
@@ -64,6 +88,8 @@ class Macros(Run):
     ) -> Sequence[AddableToParagraph | T] | AddableToDocument:
         if self.cl is None:
             return [self]
+        elif not (context.macros_permissions & self.cl.flags()):
+            return [ForbiddenMacros(self.cl.get_name())]
         elif isinstance(self.cl, macros_mixins.Instant):
             return self.cl.process_instant(context)
         return [self]

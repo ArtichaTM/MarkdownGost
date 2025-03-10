@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from io import BytesIO, StringIO
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -12,11 +13,13 @@ from docx.shared import Inches
 from .functions import add_formula, add_run, init_paragraph
 from .mixins import AddableToDocument, AddableToParagraph, HasText, ListElement
 from mgost.context import Context, ContextVariable
-from mgost.exceptions import VariablesConflict
 
 if TYPE_CHECKING:
     from .simple import Paragraph
     from mgost.context import Counters
+
+
+logger = getLogger(__name__)
 
 
 class BaseMedia(ListElement[HasText], AddableToDocument):
@@ -27,9 +30,13 @@ class BaseMedia(ListElement[HasText], AddableToDocument):
         title: str, to: 'BaseMedia',
         context: Context
     ) -> None:
+        assert isinstance(title, str)
+        assert len(title) > 1
+        assert isinstance(to, BaseMedia)
         if title in context:
-            raise VariablesConflict(f"Переменная {title} объявляется повторно")
-        context[title] = self
+            logger.info(f"Переменная {title} объявляется повторно")
+        else:
+            context[title] = self
 
     def initialize_variable(
         self,
@@ -199,7 +206,12 @@ class Table(BaseMedia):
         title = context.table_name
         context.table_name = None
         if title is None:
-            raise RuntimeError(f"There's no name for table {self.as_dict()}")
+            t_counter = 0
+            title = 'Unknown'
+            while title in context:
+                title = f"Unknown{t_counter}"
+                t_counter += 1
+            logger.warning(f"No name for table specified. Using {title}")
 
         counter_h, counter_curr = self.initialize_variable(
             title, context, increase_counter=True

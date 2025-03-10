@@ -1,3 +1,4 @@
+from ._flags import MacrosFlags
 from ._mixins import AfterDocxCreation, DuringDocxCreation
 
 
@@ -12,3 +13,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
         assert self.macros.runs is not None
         count = sum((i for i in context.counters.formula.values()))
         self.macros.runs[0].text = f"{count}"
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.NONE

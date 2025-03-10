@@ -1,8 +1,9 @@
 from io import StringIO
-from logging import warning
 from multiprocessing import Process, Queue
 from pathlib import Path
 
+from . import logger
+from ._flags import MacrosFlags
 from ._mixins import AfterDocxCreation, DuringDocxCreation
 
 
@@ -12,12 +13,12 @@ def exec_code(file_path: Path, q: Queue):
     sys.stdout = StringIO()
     try:
         exec(code)
-    except BaseException as e:
+    except BaseException as e:  # type: ignore
         text = (
             f"<Exception in {file_path.name}: "
             f"{type(e).__qualname__}({e}).>"
         )
-        warning(text[1:-1])
+        logger.info(text[1:-1])
     else:
         text = sys.stdout.getvalue()
 
@@ -37,7 +38,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
         file_path = current_folder / file_name
         if not file_path.exists():
             text = f"<File {file_name} does not exist>"
-            warning(text[1:-1])
+            logger.info(text[1:-1])
             return [p.add_run(text)]
 
         self.q = Queue(maxsize=1)
@@ -63,10 +64,14 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
             self.process.join(timeout=context.code_run_timeout)
         except TimeoutError:
             text = f"<Timeout for code in {self.macros.value}>"
-            warning(text[1:-1])
+            logger.info(text[1:-1])
             self.macros.runs[0].text = text
         assert self.q.full(), self.q.qsize()
         received = self.q.get()
         assert isinstance(received, str)
         received = received.strip()
         self.macros.runs[0].text = received
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.FILE_READING | MacrosFlags.PYTHON_EXECUTION

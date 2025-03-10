@@ -1,5 +1,5 @@
-from logging import warning
-
+from . import logger
+from ._flags import MacrosFlags
 from ._mixins import AfterDocxCreation, DuringDocxCreation
 
 
@@ -23,13 +23,13 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
                     break
         if ctx_var not in context:
             error = f"No variable named {ctx_var}"
-            warning(error)
+            logger.info(error)
             self.macros.runs[0].text = error
             return
         value = context[ctx_var]
         if not isinstance(value, BaseMedia):
             error = f"Can't mention {type(value).__qualname__}"
-            warning(error)
+            logger.info(error)
             self.macros.runs[0].text = error
         assert isinstance(value, BaseMedia)
         counters = self.macros.counters
@@ -43,3 +43,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
             value.counter(counters),
             only_number=only_number
         )
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.READ_VARIABLES

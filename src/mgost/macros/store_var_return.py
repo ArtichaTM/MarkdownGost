@@ -1,3 +1,4 @@
+from ._flags import MacrosFlags
 from ._mixins import Instant
 
 
@@ -12,3 +13,7 @@ class Macros(Instant):
         )
         context.variables[self.macros.args[0]] = v
         return v
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.ADD_VARIABLES | MacrosFlags.READ_VARIABLES

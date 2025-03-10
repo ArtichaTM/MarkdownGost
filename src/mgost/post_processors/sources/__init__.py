@@ -1,9 +1,11 @@
-from logging import warning
+from logging import getLogger
 
 from mgost.context import Context
 from mgost.types.mixins import AbstractElement
 from mgost.types.run import Run
 from mgost.types.simple import Paragraph, Root
+
+logger = getLogger(__name__)
 
 
 def replace_el(els: tuple[AbstractElement, ...], context: Context) -> None:
@@ -35,7 +37,7 @@ def post_process(context: Context) -> None:
         target_els.append((*els, el))
 
     if not target_els:
-        warning(
+        logger.info(
             'Trying to use preprocessor "sources", '
             "but no target found. "
             "Use [sources] in any line"

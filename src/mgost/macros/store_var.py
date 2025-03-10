@@ -1,4 +1,5 @@
-from ._exceptions import WrongArgument
+from . import logger
+from ._flags import MacrosFlags
 from ._mixins import Instant
 
 
@@ -8,8 +9,16 @@ class Macros(Instant):
 
     def process_instant(self, context):
         if len(self.macros.args) != 1:
-            raise WrongArgument("First argument is mandatory")
+            logger.info(
+                f'Macros "{self.get_name()}":'
+                ' first argument is mandatory'
+            )
+            return []
         context.variables[self.macros.args[0]] = self.parse_markdown(
             self.macros.value, context
         )
         return []
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.ADD_VARIABLES

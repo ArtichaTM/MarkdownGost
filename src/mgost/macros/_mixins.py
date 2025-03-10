@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Sequence
 from docx.text.paragraph import Paragraph as _Paragraph
 from docx.text.run import Run as _Run
 
+from ._flags import MacrosFlags
 from mgost.context import Context
 
 if TYPE_CHECKING:
@@ -24,6 +25,11 @@ class MacrosBase(ABC):  # type: ignore
     @classmethod
     def get_name(cls) -> str:
         return cls.__module__.split('.')[-1]
+
+    @staticmethod
+    @abstractmethod
+    def flags() -> MacrosFlags:
+        ...
 
     def parse_markdown(
         self, value: str, context: Context

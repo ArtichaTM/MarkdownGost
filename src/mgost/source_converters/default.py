@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
-from logging import warning
+from logging import getLogger
 from random import random
 
 from ._base import SourceConverter
+
+logger = getLogger(__name__)
 
 
 def find_enclosed(text: str, tag: str) -> tuple[str, int, int]:
@@ -49,9 +51,13 @@ class Converter(SourceConverter):
             p.add_run(
                 f"Got exception during parsing: {type(e).__qualname__}{e.args}"
             )
-            warning(
+            logger.warning(
                 f"{type(e).__qualname__} during internet request",
                 exc_info=e
+            )
+            logger.info(
+                "For some reason can't access site "
+                f"{url} to create source"
             )
             return
         if page is None:

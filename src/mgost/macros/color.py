@@ -1,5 +1,6 @@
 from docx.shared import RGBColor
 
+from ._flags import MacrosFlags
 from ._mixins import DuringDocxCreation
 
 
@@ -15,3 +16,7 @@ class Macros(DuringDocxCreation):
         run = p.add_run(self.macros.value)
         run.font.color.rgb = RGBColor(r, g, b)
         return [run]
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.NONE

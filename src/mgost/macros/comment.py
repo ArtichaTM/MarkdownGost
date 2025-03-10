@@ -1,3 +1,4 @@
+from ._flags import MacrosFlags
 from ._mixins import Instant
 
 
@@ -7,3 +8,7 @@ class Macros(Instant):
 
     def process_instant(self, context):
         return []
+
+    @staticmethod
+    def flags():
+        return MacrosFlags.NONE

@@ -1,4 +1,5 @@
 from io import BytesIO
+from logging import NullHandler, getLogger
 from pathlib import Path
 from typing import overload
 
@@ -6,15 +7,20 @@ from docx import Document
 
 from . import exceptions
 from .context import Context
+from .macros import MacrosFlags
 from .md_converter import parse as parse_md
 from .post_processors import get_post_processors
 from .types.simple import Root
 
 __all__ = (
     'Context',
+    'MacrosFlags',
     'exceptions',
     'convert',
 )
+
+logger = getLogger(__name__)
+logger.addHandler(NullHandler())
 
 
 @overload

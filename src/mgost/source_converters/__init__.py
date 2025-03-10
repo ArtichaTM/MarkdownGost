@@ -1,9 +1,10 @@
-from logging import warning
+from logging import getLogger
 from pathlib import Path
 
 from ._base import SourceConverter
 
 __converters: dict[str, SourceConverter] | None = None
+logger = getLogger(__name__)
 
 
 def get_converters() -> dict[str, SourceConverter]:
@@ -20,7 +21,7 @@ def get_converters() -> dict[str, SourceConverter]:
         try:
             exec(f"from .{file.name.split('.')[0]} import Converter", values)
         except Exception as e:
-            warning(
+            logger.error(
                 f"Can't import {file.name} because of "
                 f"{type(e).__qualname__}{e.args}",
                 exc_info=e

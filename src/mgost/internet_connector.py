@@ -1,5 +1,5 @@
 import pickle
-from logging import warning
+from logging import getLogger
 from pathlib import Path
 from time import time
 from typing import Literal
@@ -7,6 +7,8 @@ from typing import Literal
 import requests
 
 from .context import Context
+
+logger = getLogger(__name__)
 
 
 class RequestResultInfo:
@@ -133,7 +135,7 @@ class InternetConnection:
             try:
                 self._cache = pickle.load(file)
             except Exception as e:
-                warning("Error during pickle.load", exc_info=e)
+                logger.exception("Error during pickle.load", exc_info=e)
 
     def __call__(
         self,

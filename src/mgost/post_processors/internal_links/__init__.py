@@ -1,4 +1,8 @@
+from logging import getLogger
+
 from mgost.context import Context
+
+logger = getLogger(__name__)
 
 
 def post_process(context: Context) -> None:
@@ -6,9 +10,10 @@ def post_process(context: Context) -> None:
         try:
             bookmark_name = context.counters.bookmarks[name]
         except KeyError:
-            raise KeyError(
-                f"Вы пытаетесь сослаться на {name}"
+            logger.info(
+                f"Вы пытаетесь сослаться на {name[:30]}"
                 f", однако такой цели не существует. Возможные названия: "
-                f""
-            ) from None
+                f"{', '.join([i for i in context.counters.bookmarks.keys()])}"
+            )
+            return
         oxml.set('w:name', bookmark_name)

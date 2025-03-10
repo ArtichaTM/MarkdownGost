@@ -1,8 +1,20 @@
 from argparse import ArgumentParser, Namespace
-from logging import warning
+from dataclasses import dataclass
+from logging import INFO, StreamHandler, getLogger
 from pathlib import Path
 
-from . import convert, exceptions
+from . import Context, MacrosFlags, convert, exceptions
+
+logger = getLogger(__name__)
+
+
+@dataclass(frozen=True, repr=True, slots=True)
+class ArgsInfo:
+    source: Path
+    destination: Path
+    quite: bool
+    user_agent: str | None
+    macros_permissions: MacrosFlags
 
 
 def _build_args_parser() -> ArgumentParser:
@@ -11,16 +23,30 @@ def _build_args_parser() -> ArgumentParser:
         'source',
         type=str,
         action='store',
-        help='source file (.md)'
+        help='source file (.md)',
+        default='main.md'
     )
     parser.add_argument(
         'destination', type=str, action='store',
-        help='path to destination where save file'
+        help='path to destination where save file',
+        default='output.docx'
+    )
+    parser.add_argument(
+        '-q', '--quite', help='Disabled output in std',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--user-agent', help='User agent of internet requests',
+        action='store'
+    )
+    parser.add_argument(
+        '--macros-allow', help='Allow specific macros flag',
+        action='append'
     )
     return parser
 
 
-def _parse_namespace(args: Namespace) -> tuple[Path, Path]:
+def _parse_namespace(args: Namespace) -> ArgsInfo:
     assert hasattr(args, 'source')
     assert hasattr(args, 'destination')
 
@@ -36,14 +62,34 @@ def _parse_namespace(args: Namespace) -> tuple[Path, Path]:
     assert isinstance(destination_name, str)
     destination_path = Path(destination_name)
     if not destination_name.endswith('.docx'):
-        warning(
+        logger.warning(
             'Destination name does not end with ".docx" extension'
         )
 
-    return source_path, destination_path
+    macros_permissions = MacrosFlags.DEFAULT
+    if args.macros_allow:
+        for new_permission_name in args.macros_allow:
+            new_permission_name: str
+            new_permission_name = new_permission_name.upper()
+            try:
+                new_permission = MacrosFlags[new_permission_name]
+            except KeyError:
+                logger.exception(
+                    f"There's no permission {new_permission_name}"
+                )
+                raise
+            macros_permissions |= new_permission
+
+    return ArgsInfo(
+        source=source_path,
+        destination=destination_path,
+        quite=args.quite,
+        user_agent=args.user_agent,
+        macros_permissions=macros_permissions,
+    )
 
 
-def _parse_args() -> tuple[Path, Path]:
+def _parse_args() -> ArgsInfo:
     args_parser = _build_args_parser()
     try:
         return _parse_namespace(args_parser.parse_args())
@@ -51,13 +97,21 @@ def _parse_args() -> tuple[Path, Path]:
         exceptions.SourceDoesNotExist,
         exceptions.UnknownSourceFormat
     ) as e:
-        print(e.args[0])
+        logger.exception(e.args[0], exc_info=e)
         raise e
 
 
 def main():
-    source, dest = _parse_args()
-    convert(source, dest)
+    from . import logger
+    args = _parse_args()
+    if not args.quite:
+        logger.addHandler(StreamHandler())
+    logger.setLevel(INFO)
+    convert(Context(
+        args.source, args.destination,
+        user_agent=args.user_agent,
+        macros_permissions=args.macros_permissions
+    ))
 
 
 if __name__ == '__main__':
