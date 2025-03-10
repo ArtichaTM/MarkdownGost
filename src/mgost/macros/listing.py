@@ -27,13 +27,13 @@ class Macros(Instant):
         if not path.exists():
             logger.info(
                 f'Macros "{self.get_name()}": no '
-                f'file {path} exists'
+                f'file {name} exists'
             )
             return [Run("<No file error>")]
         if not path.is_file():
             logger.info(
                 f'Macros "{self.get_name()}": target '
-                f'{path} is not a file'
+                f'{name} is not a file'
             )
             return [Run("<Target is not a file error>")]
         return Listing(
