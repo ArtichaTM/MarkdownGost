@@ -16,18 +16,18 @@ class Macros(DuringDocxCreation):
     def process_during_docx_creation(self, p, context):
         if len(self.macros.args) != 1:
             logger.info(
-                f'Macros "{self.get_name()}" requires at least one argument'
+                f'Макрос "{self.get_name()}" требует хотя бы 1 аргумент'
             )
-            return [p.add_run("<Arguments error>")]
+            return [p.add_run("<Ошибка аргументов>")]
         name = self.macros.args[0]
         names = {i.name for i in WD_COLOR_INDEX}
         if name not in names:
             logger.info(
-                f'Macros "{self.get_name()}" second argument is'
-                f' value from WD_COLOR_INDEX. But {name[:30]}'
-                f' does not element of {names}'
+                f'Макрос "{self.get_name()}": второй аргумент '
+                f' требует значение из WD_COLOR_INDEX, но '
+                f'{name[:30]} не элемент {names}'
             )
-            return [p.add_run("<Arguments error>")]
+            return [p.add_run("<Ошибка аргументов>")]
         run = p.add_run(self.macros.value)
         run.font.highlight_color = getattr(WD_COLOR_INDEX, self.macros.args[0])
 

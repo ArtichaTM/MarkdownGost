@@ -22,13 +22,13 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
                     ctx_var = key
                     break
         if ctx_var not in context:
-            error = f"No variable named {ctx_var}"
+            error = f"Переменная {ctx_var} не существует"
             logger.info(error)
             self.macros.runs[0].text = error
             return
         value = context[ctx_var]
         if not isinstance(value, BaseMedia):
-            error = f"Can't mention {type(value).__qualname__}"
+            error = f"Не могу упомянуть {type(value).__qualname__}"
             logger.info(error)
             self.macros.runs[0].text = error
         assert isinstance(value, BaseMedia)

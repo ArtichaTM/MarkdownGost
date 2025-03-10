@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Sequence
 from urllib.parse import unquote
 from xml.etree import ElementTree as et
@@ -10,6 +11,8 @@ from mgost.types.media import Image, Table
 from mgost.types.mixins import AddableToDocument, AddableToParagraph
 from mgost.types.run import Run
 from mgost.types.simple import Heading, Paragraph, Root
+
+logger = getLogger(__name__)
 
 
 def parse_plain_text(
@@ -65,8 +68,9 @@ def _parse_text(
             assert isinstance(temp, list)
             runs.extend(temp)
         except UnknownTag as e:
-            print(f"Got unknown tag: UnknownTag({e.args[0]!r})")
-            pass
+            logger.info(
+                f"Неизвестный HTML тег: {e.args[0]}. Пропускаем"
+            )
 
     return runs
 

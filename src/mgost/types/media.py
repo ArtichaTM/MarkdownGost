@@ -141,9 +141,9 @@ class Image(BaseMedia):
         ):
             path = context.source.parent / self.src
             if not path.exists():
-                print(
-                    f"File {path} does not exist. "
-                    "Can't place this image in document"
+                logger.info(
+                    f"Файл {path} не существует. "
+                    "Изображение (рисунок) пропущен"
                 )
                 return
 

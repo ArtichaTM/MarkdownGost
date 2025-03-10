@@ -15,8 +15,8 @@ def exec_code(file_path: Path, q: Queue):
         exec(code)
     except BaseException as e:  # type: ignore
         text = (
-            f"<Exception in {file_path.name}: "
-            f"{type(e).__qualname__}({e}).>"
+            f"<Ошибка в {file_path.name}: "
+            f"{type(e).__qualname__}({e})>"
         )
         logger.info(text[1:-1])
     else:
@@ -65,7 +65,7 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
         try:
             self.process.join(timeout=context.code_run_timeout)
         except TimeoutError:
-            text = f"<Timeout for code in {self.macros.value}>"
+            text = f"<Таймаут в {self.macros.value}>"
             logger.info(text[1:-1])
             self.macros.runs[0].text = text
         assert self.q.full(), self.q.qsize()

@@ -47,23 +47,23 @@ class MacrosBase(ABC):  # type: ignore
         )
         if not name:
             logger.info(
-                f'Macros "{self.get_name()}": no '
-                f'file specified'
+                f'Макрос "{self.get_name()}": не '
+                'указан файл'
             )
-            return [Run("<No file error>")]
+            return [Run("<Ошибка: не указан файл>")]
         path = context.source.parent / name
         if not path.exists():
             logger.info(
-                f'Macros "{self.get_name()}": no '
-                f'file {name} exists'
+                f'Макрос "{self.get_name()}": файл '
+                f'{name} не существует'
             )
-            return [Run("<No file error>")]
+            return [Run("<Ошибка: нет файла>")]
         if not path.is_file():
             logger.info(
-                f'Macros "{self.get_name()}": target '
-                f'{name} is not a file'
+                f'Макрос "{self.get_name()}": цель '
+                f'{name} не является файлом'
             )
-            return [Run("<Target is not a file error>")]
+            return [Run("<Ошибка: цель не является файлом>")]
         return path
 
     def parse_markdown(

@@ -10,8 +10,8 @@ class Macros(DuringDocxCreation):
     def process_during_docx_creation(self, p, context):
         if context.table_name is not None:
             logger.info(
-                "Table name is already set. Old "
-                f"table name: {context.table_name}"
+                "Название таблицы уже установленно. Старое"
+                f" название: {context.table_name}"
             )
         else:
             context.table_name = self.macros.value

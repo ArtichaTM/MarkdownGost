@@ -56,8 +56,9 @@ class Converter(SourceConverter):
                 exc_info=e
             )
             logger.info(
-                "For some reason can't access site "
-                f"{url} to create source"
+                "По какой-то причине достичь сайта "
+                f"{url} не удалось. Пропуск "
+                "создания источника"
             )
             return
         if page is None:

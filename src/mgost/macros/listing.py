@@ -16,10 +16,10 @@ class Macros(Instant):
     def process_instant(self, context):
         if len(self.macros.args) != 1:
             logger.info(
-                f'Macros "{self.get_name()}": first '
-                'argument is mandatory'
+                f'Макрос "{self.get_name()}": первый'
+                ' аргумент обязательный'
             )
-            return [Run("<No first argument error>")]
+            return [Run("<Ошибка аргументов>")]
         path = self.check_file(self.macros.value[:30], context)
         if isinstance(path, list):
             return path

@@ -38,9 +38,9 @@ def post_process(context: Context) -> None:
 
     if not target_els:
         logger.info(
-            'Trying to use preprocessor "sources", '
-            "but no target found. "
-            "Use [sources] in any line"
+            'Попытка воспользоваться "sources", '
+            "но данная строчка не найдена. "
+            "Используйте [sources] в любой строчке"
         )
 
     for els in target_els:
