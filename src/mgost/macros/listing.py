@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from . import logger
 from ._flags import MacrosFlags
 from ._mixins import Instant
@@ -18,24 +20,10 @@ class Macros(Instant):
                 'argument is mandatory'
             )
             return [Run("<No first argument error>")]
-        name = (
-            self.macros.value[:30]
-            .replace('..\\', '')
-            .replace('../', '')
-        )
-        path = context.source.parent / name
-        if not path.exists():
-            logger.info(
-                f'Macros "{self.get_name()}": no '
-                f'file {name} exists'
-            )
-            return [Run("<No file error>")]
-        if not path.is_file():
-            logger.info(
-                f'Macros "{self.get_name()}": target '
-                f'{name} is not a file'
-            )
-            return [Run("<Target is not a file error>")]
+        path = self.check_file(self.macros.value[:30], context)
+        if isinstance(path, list):
+            return path
+        assert isinstance(path, Path)
         return Listing(
             self.macros.args[0],
             path.read_text(encoding='utf-8').strip()

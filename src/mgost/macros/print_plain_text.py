@@ -33,25 +33,27 @@ class Macros(DuringDocxCreation, AfterDocxCreation):
 
     def process_during_docx_creation(self, p, context):
         self.process = None
-        file_name = self.macros.value
-        current_folder = context.source.parent
-        file_path = current_folder / file_name
-        if not file_path.exists():
-            text = f"<File {file_name} does not exist>"
-            logger.info(text[1:-1])
-            return [p.add_run(text)]
+
+        path = self.check_file(self.macros.value, context)
+        if isinstance(path, list):
+            runs = path
+            new_runs = []
+            for run in runs:
+                new_runs.extend(run.add_to_paragraph(p, context))
+            return new_runs
+        assert isinstance(path, Path)
 
         self.q = Queue(maxsize=1)
         self.process = Process(
             target=exec_code,
             args=(
-                file_path, self.q
+                path, self.q
             ),
             name=f"<{self.get_name()}: {self.macros.value}>",
             daemon=True
         )
         self.process.start()
-        return [p.add_run(f'<CodeMacros {file_name}>')]
+        return [p.add_run(f'<CodeMacros {path}>')]
 
     def process_after_docx_creation(
         self, context

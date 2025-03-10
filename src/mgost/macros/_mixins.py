@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from logging import getLogger
+from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
 from docx.text.paragraph import Paragraph as _Paragraph
@@ -6,10 +8,14 @@ from docx.text.run import Run as _Run
 
 from ._flags import MacrosFlags
 from mgost.context import Context
+from mgost.types.run import Run
 
 if TYPE_CHECKING:
     from mgost.types.macros import Macros
     from mgost.types.mixins import AddableToDocument, AddableToParagraph
+
+
+logger = getLogger(__name__)
 
 
 class MacrosBase(ABC):  # type: ignore
@@ -30,6 +36,35 @@ class MacrosBase(ABC):  # type: ignore
     @abstractmethod
     def flags() -> MacrosFlags:
         ...
+
+    def check_file(self, name: str, context: Context) -> list[Run] | Path:
+        assert isinstance(name, str)
+        assert self.flags() & MacrosFlags.FILE_READING
+        name = (
+            name[:30]
+            .replace('..\\', '')
+            .replace('../', '')
+        )
+        if not name:
+            logger.info(
+                f'Macros "{self.get_name()}": no '
+                f'file specified'
+            )
+            return [Run("<No file error>")]
+        path = context.source.parent / name
+        if not path.exists():
+            logger.info(
+                f'Macros "{self.get_name()}": no '
+                f'file {name} exists'
+            )
+            return [Run("<No file error>")]
+        if not path.is_file():
+            logger.info(
+                f'Macros "{self.get_name()}": target '
+                f'{name} is not a file'
+            )
+            return [Run("<Target is not a file error>")]
+        return path
 
     def parse_markdown(
         self, value: str, context: Context
@@ -63,7 +98,7 @@ class DuringDocxCreation(MacrosBase):
         self,
         p: _Paragraph,
         context: Context
-    ) -> list['_Run']:
+    ) -> Sequence['_Run']:
         ...
 
 
